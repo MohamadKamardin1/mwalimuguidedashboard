@@ -10,7 +10,7 @@
         class="cursor-pointer text-black opacity-50 md:hidden px-3 py-1 text-xl leading-none bg-transparent rounded border border-solid border-transparent"
         type="button"
         aria-label="Open the menu"
-        :aria-expanded="open ? 'true' : 'false'"
+        :aria-expanded="menuOpen ? 'true' : 'false'"
         @click="openMenu"
       >
         <i class="fas fa-bars"></i>
@@ -154,6 +154,17 @@ export default {
     },
     heading() {
       return useAuthStore().role === SCHOOL_ADMIN ? "School admin" : "Teacher";
+    },
+    /**
+     * Whether the mobile menu is showing.
+     *
+     * `collapseShow` is a class string, not a flag, so the toggler's
+     * `aria-expanded` reads it here. It used to read a property called `open`
+     * that this component never declared: Vue warned on every render and the
+     * button announced itself as collapsed even when the menu was open.
+     */
+    menuOpen() {
+      return this.collapseShow !== "hidden";
     },
   },
   methods: {
