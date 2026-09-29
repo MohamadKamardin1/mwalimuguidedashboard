@@ -5,6 +5,9 @@ on:
     branches:
       - main
       - master
+      # This repository publishes from `sultan`; main and master are kept so a
+      # fork that renames the branch still deploys.
+      - sultan
 
 permissions:
   contents: write
