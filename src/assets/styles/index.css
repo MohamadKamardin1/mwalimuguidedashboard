@@ -1,0 +1,266 @@
+@tailwind base;
+
+@tailwind components;
+
+/*
+ * Keyboard focus, stated once.
+ *
+ * Written between the components and the utilities so it lands in the cascade
+ * BEFORE every utility. That makes it a default rather than an override:
+ * anything that already says `focus:outline-none` or supplies its own
+ * `focus:ring` still wins, and no shape is touched.
+ *
+ * An earlier version of this sat after the utilities, where its equal
+ * specificity let it quietly override `rounded-full` and `focus:outline-none`
+ * across the whole app.
+ */
+:focus-visible {
+  outline: 2px solid theme("colors.lightBlue.500");
+  outline-offset: 2px;
+}
+
+@tailwind utilities;
+
+/*
+ * Paper.
+ *
+ * A report is something a teacher prints and takes to a staff meeting, so the
+ * printed page has to stand on its own: the app's chrome is gone, colours
+ * survive, a chart is never split across two sheets, and the address of the
+ * report is printed at the foot so it can be found again.
+ *
+ * `print-color-adjust: exact` is the load-bearing line -- without it browsers
+ * drop every background, which is what a heatmap is made of.
+ */
+@media print {
+  /*
+   * The sheet, and what is printed at its foot.
+   *
+   * Chrome does support `@page` margin boxes with `counter(page)`, so a
+   * printed report can say "Page 2 of 5" without any JavaScript pagination --
+   * which would have had to guess where the browser breaks pages anyway.
+   *
+   * The school and the report's title come from custom properties rather than
+   * from `content` literals: `content` cannot read the DOM, but it can read a
+   * variable, and `ReportPage` sets both from the report it is showing. The
+   * fallbacks are empty so a page with no report open prints no footer rather
+   * than the word "undefined".
+   */
+  @page {
+    size: A4 portrait;
+    /* Extra at the foot: the margin box sits inside the margin. */
+    margin: 12mm 13mm 18mm;
+
+    @bottom-left {
+      content: var(--report-school, "");
+      font-family: theme("fontFamily.sans");
+      font-size: 8pt;
+      color: #64748b;
+    }
+
+    @bottom-center {
+      content: var(--report-title, "");
+      font-family: theme("fontFamily.sans");
+      font-size: 8pt;
+      color: #94a3b8;
+    }
+
+    @bottom-right {
+      content: "Page " counter(page) " of " counter(pages);
+      font-family: theme("fontFamily.sans");
+      font-size: 8pt;
+      color: #64748b;
+    }
+  }
+
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  /* Navigation and anything else that is only useful on a screen. */
+  nav,
+  aside,
+  footer,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /*
+   * The `print:` utilities the reports use, written out.
+   *
+   * Tailwind 2.0.4 has no print variant, and registering one with `addVariant`
+   * does not make it apply to core utilities -- every `print:...` class in the
+   * app was being dropped at build time, which is why cards kept their shadows
+   * on paper and the heatmap stayed clipped to its scroll box. Listing the
+   * handful of them here is explicit and cannot fail quietly.
+   */
+  .print\:block {
+    display: block !important;
+  }
+
+  .print\:shadow-none {
+    box-shadow: none !important;
+  }
+
+  .print\:border-0 {
+    border-width: 0 !important;
+  }
+
+  .print\:border {
+    border-width: 1px !important;
+    border-style: solid !important;
+  }
+
+  .print\:border-blueGray-200 {
+    border-color: theme("colors.blueGray.200") !important;
+  }
+
+  .print\:border-blueGray-300 {
+    border-color: theme("colors.blueGray.300") !important;
+  }
+
+  .print\:bg-white {
+    background-color: #fff !important;
+  }
+
+  .print\:overflow-visible {
+    overflow: visible !important;
+  }
+
+  .print\:mt-2 {
+    margin-top: 0.5rem !important;
+  }
+
+  .print\:mb-4 {
+    margin-bottom: 1rem !important;
+  }
+
+  /* The sidebar pins the content to the right on screen; on paper there is
+     no sidebar, so the content takes the whole width. */
+  .md\:ml-64 {
+    margin-left: 0 !important;
+  }
+
+  .report-page {
+    padding: 0 !important;
+  }
+
+  /* Keep a card, a row or a chart whole across a page break. */
+  .report-section,
+  table,
+  tr,
+  .print\:break-inside-avoid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  table {
+    font-size: 11px;
+  }
+
+  /* A link is useless on paper; its text is not. */
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  .report-page,
+  .report-page * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /*
+   * The columns, at paper width.
+   *
+   * A4 portrait less a 13mm margin is about 184mm, which is 695px: below `md`
+   * (768px) and below `lg` (1024px). Every multi-column row in every report is
+   * written for one of those breakpoints, so on paper they all collapsed into
+   * a single long column -- a two-page report printed as three or four, with
+   * half of each sheet empty.
+   *
+   * These restate the widths the screen would have used. A report's own print
+   * rules can still override them by being more specific (`.report-page
+   * .my-rows > div` beats `.report-page .md\:w-4\/12`), which is how the
+   * assessment report keeps its six KPIs on one line.
+   */
+  .report-page .md\:w-4\/12 {
+    width: 33.3333% !important;
+  }
+
+  .report-page .md\:w-6\/12 {
+    width: 50% !important;
+  }
+
+  .report-page .md\:w-8\/12 {
+    width: 66.6667% !important;
+  }
+
+  .report-page .lg\:w-1\/5 {
+    width: 20% !important;
+  }
+
+  .report-page .lg\:w-2\/5 {
+    width: 40% !important;
+  }
+
+  .report-page .lg\:w-3\/12 {
+    width: 25% !important;
+  }
+
+  .report-page .lg\:w-4\/12 {
+    width: 33.3333% !important;
+  }
+
+  .report-page .lg\:w-6\/12 {
+    width: 50% !important;
+  }
+
+  .report-page .lg\:w-8\/12 {
+    width: 66.6667% !important;
+  }
+
+  /*
+   * The mobile shapes, taken back off the paper.
+   *
+   * Cards and a table are two ways of showing the same rows, and the card
+   * version is the one that shows below `md` -- which paper is. Left alone,
+   * a printed report carried both: the cards, then the table underneath them.
+   * The card wrapper is `md:hidden` and the table `hidden md:table`, so
+   * undoing the two is one rule each.
+   */
+  .report-page .md\:hidden {
+    display: none !important;
+  }
+
+  .report-page .hidden.md\:table {
+    display: table !important;
+  }
+
+  .report-page .hidden.md\:block {
+    display: block !important;
+  }
+
+  .report-page .hidden.md\:table-cell {
+    display: table-cell !important;
+  }
+
+  .report-page .hidden.md\:inline-flex {
+    display: inline-flex !important;
+  }
+
+  /* A heatmap is wide; sideways is how it fits. `printLandscape` sets this
+     class around `window.print()` and takes it off again. */
+  .report-page.report-landscape {
+    page: report-landscape;
+  }
+}
+
+/*
+ * A named page for the landscape print, so the portrait rules above still
+ * apply to everything else and the footer is not lost by switching size.
+ */
+@page report-landscape {
+  size: A4 landscape;
+}

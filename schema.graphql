@@ -1,0 +1,758 @@
+type AIMarkType {
+  id: ID!
+  question: QuestionRefType!
+  awardedMarks: Float!
+  perRubric: JSON!
+  reasoning: String!
+  errorType: String!
+  confidence: Float!
+  errorCarriedForward: Boolean!
+  promptVersion: String!
+  createdAt: DateTime!
+}
+
+type AcademicTermType {
+  id: ID!
+  name: String!
+  year: Int!
+  startDate: Date!
+  endDate: Date!
+  isCurrent: Boolean!
+  isActive: Boolean!
+}
+
+type AcademicTermTypePage {
+  total: Int!
+  items: [AcademicTermType!]!
+}
+
+type AnswerType {
+  id: ID!
+  question: QuestionRefType!
+  transcribedText: String!
+  workingSteps: [String!]!
+  finalAnswer: String!
+  legibilityScore: Float!
+  pageRef: Int
+  isBlank: Boolean!
+  markHistory: [MarkCorrectionType!]!
+  aiMark: AIMarkType
+}
+
+type AssessmentReportType {
+  examId: ID!
+  title: String!
+  status: String!
+  totalMarks: Int!
+  markedScripts: Int!
+  mean: Float
+  median: Float
+  stdDev: Float
+  minimum: Float
+  maximum: Float
+  passRate: Float
+  difficulty: String
+  histogram: [HistogramBucketType!]!
+  grades: [GradeBandType!]!
+  questions: [QuestionStatType!]!
+  rubricItems: [RubricStatType!]!
+  markingQuality: MarkingQualityType!
+}
+
+type AttendancePointType {
+  examId: ID!
+  title: String!
+  enrolled: Int!
+  submitted: Int!
+  missing: Int!
+}
+
+type AuthPayload {
+  accessToken: String!
+  refreshToken: String!
+  expiresIn: Int!
+  user: UserType!
+}
+
+type ClassInsightType {
+  id: ID!
+  schoolClass: SchoolClassType!
+  hardestQuestions: JSON!
+  commonMistakes: JSON!
+  reteachRecommendations: JSON!
+  language: String!
+  createdAt: DateTime!
+  examId: ID!
+}
+
+type ClassProgressType {
+  classId: ID!
+  className: String!
+  termId: ID
+  exams: Int!
+  skills: [SkillTrendType!]!
+  gapsOpened: Int!
+  gapsClosed: Int!
+  cohortGrowth: Float!
+}
+
+type ClassReportType {
+  classId: ID!
+  className: String!
+  subjectId: ID
+  termId: ID
+  exams: Int!
+  trend: [ExamTrendPointType!]!
+  skills: [SkillAverageType!]!
+  heatmap: [HeatmapRowType!]!
+  atRisk: [StudentMoveType!]!
+  improvers: [StudentMoveType!]!
+  gapGroups: [GapGroupType!]!
+  attendance: [AttendancePointType!]!
+}
+
+type CreatedUser {
+  user: UserType!
+  temporaryPassword: String!
+}
+
+type CurriculumSubjectType {
+  id: ID!
+  name: String!
+  code: String!
+}
+
+"""Date (isoformat)"""
+scalar Date
+
+"""Date with time (isoformat)"""
+scalar DateTime
+
+type EnrollmentType {
+  id: ID!
+  student: StudentType!
+  schoolClass: SchoolClassType!
+  term: AcademicTermType!
+  isActive: Boolean!
+}
+
+type EnrollmentTypePage {
+  total: Int!
+  items: [EnrollmentType!]!
+}
+
+type ExamFileType {
+  id: ID!
+  kind: String!
+  pageNumber: Int!
+  order: Int!
+  file: String!
+  url: String!
+}
+
+type ExamReportRowType {
+  studentId: ID!
+  studentName: String!
+  admissionNo: String!
+  scriptId: ID
+  totalMarks: Float
+  maxMarks: Float
+  percent: Float
+  reportId: ID
+  status: String
+  language: String
+  viewedAt: DateTime
+  createdAt: DateTime
+}
+
+type ExamStatsType {
+  examId: ID!
+  paperPages: Int!
+  schemePages: Int!
+  questions: Int!
+  confirmedQuestions: Int!
+  scripts: Int!
+  unmatchedScripts: Int!
+  groupedScripts: Int!
+  markedScripts: Int!
+  finalizedScripts: Int!
+  answers: Int!
+  awaitingReview: Int!
+  average: Float
+}
+
+type ExamTrendPointType {
+  examId: ID!
+  title: String!
+  at: DateTime!
+  averagePercent: Float
+  markedScripts: Int!
+  passed: Int!
+}
+
+type ExamType {
+  id: ID!
+  title: String!
+  subject: CurriculumSubjectType!
+  schoolClass: SchoolClassType!
+  term: AcademicTermType!
+  totalMarks: Int!
+  status: String!
+  warnings: [String!]!
+  createdBy: UserType!
+  createdAt: DateTime!
+  files: [ExamFileType!]!
+  questions: [QuestionType!]!
+}
+
+type ExamTypePage {
+  total: Int!
+  items: [ExamType!]!
+}
+
+type FinalMarkType {
+  id: ID!
+  marks: Float!
+  source: String!
+  markedBy: UserType
+  reviewedAt: DateTime
+  createdAt: DateTime!
+}
+
+type GapGroupType {
+  id: ID!
+  skill: SkillRefType!
+  errorType: String!
+  label: String!
+  createdAt: DateTime!
+  students: [StudentType!]!
+  examId: ID!
+  materials: [TeachingMaterialType!]!
+}
+
+type GradeBandType {
+  grade: String!
+  count: Int!
+  percent: Float!
+}
+
+type HeatmapCellType {
+  skillId: ID!
+  code: String!
+  name: String!
+  score: Float
+}
+
+type HeatmapRowType {
+  studentId: ID!
+  studentName: String!
+  admissionNo: String!
+  cells: [HeatmapCellType!]!
+}
+
+type HistogramBucketType {
+  label: String!
+  lower: Float!
+  upper: Float!
+  count: Int!
+  percent: Float!
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](https://ecma-international.org/wp-content/uploads/ECMA-404_2nd_edition_december_2017.pdf).
+"""
+scalar JSON @specifiedBy(url: "https://ecma-international.org/wp-content/uploads/ECMA-404_2nd_edition_december_2017.pdf")
+
+type MarkCorrectionType {
+  id: ID!
+  oldMarks: Float!
+  newMarks: Float!
+  reason: String!
+  correctedBy: UserType
+  createdAt: DateTime!
+}
+
+type MarkingQualityType {
+  aiAccepted: Int!
+  teacherCorrected: Int!
+  aiAcceptedPercent: Float!
+  teacherCorrectedPercent: Float!
+  corrections: Int!
+  averageCorrection: Float
+  illegible: Int!
+  averageConfidence: Float
+}
+
+type Mutation {
+  login(email: String!, password: String!): AuthPayload!
+  refreshToken(refreshToken: String!): AuthPayload!
+  createSchool(name: String!, code: String!, region: String!): SchoolType!
+  createUser(email: String!, role: String!, schoolId: ID = null, firstName: String! = "", lastName: String! = ""): CreatedUser!
+  changePassword(oldPassword: String!, newPassword: String!): UserType!
+  resetUserPassword(userId: ID!): ResetPassword!
+  setUserActive(userId: ID!, isActive: Boolean!): UserType!
+  createAcademicTerm(name: String!, year: Int!, startDate: Date!, endDate: Date!, isCurrent: Boolean! = false): AcademicTermType!
+  updateAcademicTerm(id: ID!, name: String, year: Int, startDate: Date, endDate: Date, isCurrent: Boolean): AcademicTermType!
+  deactivateAcademicTerm(id: ID!): AcademicTermType!
+  createClass(name: String!, level: Int!, year: Int!): SchoolClassType!
+  updateClass(id: ID!, name: String, level: Int, year: Int): SchoolClassType!
+  deactivateClass(id: ID!): SchoolClassType!
+  createSubject(name: String!, code: String!): SubjectType!
+  updateSubject(id: ID!, name: String, code: String): SubjectType!
+  deactivateSubject(id: ID!): SubjectType!
+  createStudent(fullName: String!, admissionNo: String!, gender: String!, dateOfBirth: Date = null): StudentType!
+  updateStudent(id: ID!, fullName: String, admissionNo: String, gender: String, dateOfBirth: Date, isActive: Boolean): StudentType!
+  deactivateStudent(id: ID!): StudentType!
+  createEnrollment(studentId: ID!, classId: ID!, termId: ID!): EnrollmentType!
+  updateEnrollment(id: ID!, classId: ID, termId: ID, isActive: Boolean): EnrollmentType!
+  deactivateEnrollment(id: ID!): EnrollmentType!
+  createTeacherAssignment(teacherId: ID!, classId: ID!, subjectId: ID!, termId: ID!): TeacherAssignmentType!
+  updateTeacherAssignment(id: ID!, subjectId: ID, termId: ID, isActive: Boolean): TeacherAssignmentType!
+  deactivateTeacherAssignment(id: ID!): TeacherAssignmentType!
+  importStudentsCsv(classId: ID!, file: Upload!): ID!
+  createExam(title: String!, subjectId: ID!, classId: ID!, termId: ID!, totalMarks: Int!): ExamType!
+  uploadExamFiles(examId: ID!, kind: String!, files: [Upload!]!): ID!
+  upsertQuestion(number: String!, id: ID = null, examId: ID = null, text: String, expectedAnswer: String, maxMarks: Int, questionType: String, order: Int, parentId: ID, isConfirmed: Boolean): QuestionType!
+  upsertRubricItem(description: String!, marks: Int!, id: ID = null, questionId: ID = null, kind: String, order: Int): RubricItemType!
+  setQuestionSkills(questionId: ID!, skills: [QuestionSkillInput!]!): QuestionType!
+  extractExam(examId: ID!): ID!
+  confirmExtractedExam(examId: ID!): ExamType!
+  updateExam(id: ID!, title: String, totalMarks: Int): ExamType!
+  deleteExam(id: ID!): Boolean!
+  deleteQuestion(id: ID!): Boolean!
+  deleteRubricItem(id: ID!): Boolean!
+  deleteExamFile(id: ID!): Boolean!
+  reorderExamFiles(examId: ID!, kind: String!, fileIds: [ID!]!): ExamType!
+  uploadScriptPages(examId: ID!, files: [Upload!]!): ID!
+  assignScriptToStudent(scriptId: ID!, studentId: ID!): ScriptType!
+  mergePagesIntoScript(sourceScriptId: ID!, targetScriptId: ID!): ScriptType!
+  splitScript(scriptId: ID!, pageIds: [ID!]!): ScriptType!
+  startMarking(examId: ID!): ID!
+  overrideMark(answerId: ID!, marks: Float!, reason: String!): FinalMarkType!
+  acceptMark(answerId: ID!): FinalMarkType!
+  acceptAllHighConfidence(examId: ID!): Int!
+  finalizeExam(examId: ID!): ExamType!
+  regenerateReport(studentId: ID!, examId: ID!, language: String = null): StudentReportType!
+  generateTeachingMaterial(gapGroupId: ID!, language: String = null, kind: String! = "practice_set"): TeachingMaterialType!
+  saveReportNotes(reportId: ID!, notes: String!): StudentReportType!
+  markReportViewed(reportId: ID!): StudentReportType!
+}
+
+type ProcessingJobType {
+  id: ID!
+  jobType: String!
+  status: String!
+  progress: Int!
+  error: String!
+  result: JSON!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ProgressExamPointType {
+  examId: ID!
+  title: String!
+  at: DateTime!
+  marks: Float!
+  maxMarks: Float!
+  score: Float!
+  classAverage: Float
+  classSize: Int!
+}
+
+type Query {
+  health: String!
+  job(id: ID!): ProcessingJobType
+  me: UserType
+  users(role: String = null, search: String = null, isActive: Boolean = null, offset: Int! = 0, limit: Int! = 50): UserTypePage!
+  academicTerms(year: Int = null, isCurrent: Boolean = null, isActive: Boolean = true, offset: Int! = 0, limit: Int! = 50): AcademicTermTypePage!
+  classes(level: Int = null, year: Int = null, search: String = null, isActive: Boolean = true, offset: Int! = 0, limit: Int! = 50): SchoolClassTypePage!
+  class(id: ID!): SchoolClassType
+  subjects(search: String = null, isActive: Boolean = true, offset: Int! = 0, limit: Int! = 50): SubjectTypePage!
+  students(search: String = null, gender: String = null, classId: ID = null, isActive: Boolean = true, offset: Int! = 0, limit: Int! = 50): StudentTypePage!
+  enrollments(classId: ID = null, termId: ID = null, studentId: ID = null, isActive: Boolean = true, offset: Int! = 0, limit: Int! = 50): EnrollmentTypePage!
+  teacherAssignments(classId: ID = null, teacherId: ID = null, subjectId: ID = null, termId: ID = null, isActive: Boolean = true, offset: Int! = 0, limit: Int! = 50): TeacherAssignmentTypePage!
+  curriculumSubjects: [CurriculumSubjectType!]!
+  topics(subject: String = null, level: Int = null): [TopicType!]!
+  skills(topicId: ID!): [SkillType!]!
+  skill(id: ID!): SkillType
+  exam(id: ID!): ExamType
+  exams(classId: ID = null, termId: ID = null, subjectId: ID = null, status: String = null, search: String = null, mine: Boolean! = false, createdById: ID = null, offset: Int! = 0, limit: Int! = 50): ExamTypePage!
+  examStats(examId: ID!): ExamStatsType!
+  question(id: ID!): QuestionType
+  questions(examId: ID!, parentId: ID = null): [QuestionType!]!
+  scripts(examId: ID!, status: String = null, offset: Int! = 0, limit: Int! = 50): ScriptTypePage!
+  script(id: ID!): ScriptType
+  reviewQueue(examId: ID!, offset: Int! = 0, limit: Int! = 50): ReviewItemTypePage!
+  scriptResult(scriptId: ID!): ScriptResultType!
+  studentReport(studentId: ID!, examId: ID!): StudentReportType
+  classInsights(examId: ID!): ClassInsightType
+  gapGroups(examId: ID!): [GapGroupType!]!
+  studentProgress(studentId: ID!, subjectId: ID = null, fromTermId: ID = null): StudentProgressType!
+  assessmentReport(examId: ID!): AssessmentReportType!
+  examReports(examId: ID!): [ExamReportRowType!]!
+  classReport(classId: ID!, subjectId: ID!, termId: ID!, examIds: [ID!] = null): ClassReportType!
+  classProgress(classId: ID!, subjectId: ID!, termId: ID!): ClassProgressType!
+}
+
+type QuestionRefType {
+  id: ID!
+  number: String!
+  text: String!
+  maxMarks: Int!
+}
+
+type QuestionResultType {
+  answerId: ID!
+  questionNumber: String!
+  maxMarks: Int!
+  marks: Float
+  source: String
+  reviewed: Boolean!
+  isBlank: Boolean!
+  confidence: Float
+  reasoning: String!
+}
+
+input QuestionSkillInput {
+  skillId: ID!
+  weight: Float! = 1
+}
+
+type QuestionSkillType {
+  id: ID!
+  skill: SkillRefType!
+  weight: Float!
+}
+
+type QuestionStatType {
+  number: String!
+  maxMarks: Int!
+  answers: Int!
+  marked: Int!
+  average: Float!
+  averagePercent: Float!
+  percentFull: Float!
+  percentZero: Float!
+  percentBlank: Float!
+  mostCommonError: String!
+  averageConfidence: Float
+  teacherCorrected: Int!
+}
+
+type QuestionType {
+  id: ID!
+  number: String!
+  text: String!
+  expectedAnswer: String!
+  alternativeMethods: [String!]!
+  commonErrors: [String!]!
+  maxMarks: Int!
+  order: Int!
+  questionType: String!
+  isConfirmed: Boolean!
+  parent: QuestionRefType
+  children: [QuestionRefType!]!
+  rubricItems: [RubricItemType!]!
+  skills: [QuestionSkillType!]!
+  examId: ID!
+}
+
+type ResetPassword {
+  user: UserType!
+  temporaryPassword: String!
+}
+
+type ReviewItemType {
+  answerId: ID!
+  scriptId: ID!
+  studentName: String!
+  questionNumber: String!
+  questionText: String!
+  maxMarks: Int!
+  transcribedText: String!
+  workingSteps: [String!]!
+  finalAnswer: String!
+  isBlank: Boolean!
+  legibilityScore: Float!
+  pageUrls: [String!]!
+  awardedMarks: Float
+  confidence: Float
+  errorType: String
+  reasoning: String!
+  rubricBreakdown: JSON!
+  errorCarriedForward: Boolean!
+}
+
+type ReviewItemTypePage {
+  total: Int!
+  items: [ReviewItemType!]!
+}
+
+type RubricItemType {
+  id: ID!
+  description: String!
+  marks: Int!
+  kind: String!
+  order: Int!
+}
+
+type RubricStatType {
+  questionNumber: String!
+  description: String!
+  marks: Int!
+  offered: Int!
+  awarded: Int!
+  awardRate: Float!
+}
+
+type SchoolClassType {
+  id: ID!
+  name: String!
+  level: Int!
+  year: Int!
+  isActive: Boolean!
+}
+
+type SchoolClassTypePage {
+  total: Int!
+  items: [SchoolClassType!]!
+}
+
+type SchoolType {
+  id: ID!
+  name: String!
+  code: String!
+  region: String!
+  isActive: Boolean!
+}
+
+type ScriptPageType {
+  id: ID!
+  order: Int!
+  image: String!
+  url: String!
+}
+
+type ScriptResultType {
+  scriptId: ID!
+  studentName: String!
+  totalMarks: Float!
+  maxMarks: Int!
+  answers: [QuestionResultType!]!
+}
+
+type ScriptType {
+  id: ID!
+  student: StudentType
+  status: String!
+  matchMethod: String!
+  matchConfidence: Float!
+  detectedName: String!
+  detectedAdmissionNo: String!
+  needsGrouping: Boolean!
+  pages: [ScriptPageType!]!
+  answers: [AnswerType!]!
+  examId: ID!
+  needsReview: Boolean!
+}
+
+type ScriptTypePage {
+  total: Int!
+  items: [ScriptType!]!
+}
+
+type SkillAverageType {
+  skillId: ID!
+  code: String!
+  name: String!
+  average: Float
+  measured: Int!
+}
+
+type SkillMasteryPointType {
+  examId: ID!
+  examTitle: String!
+  at: DateTime!
+  average: Float
+  measured: Int!
+}
+
+type SkillMasteryType {
+  id: ID!
+  student: StudentType!
+  skill: SkillRefType!
+  score: Float!
+  marksEarned: Float!
+  marksPossible: Float!
+  recordedAt: DateTime!
+  examId: ID!
+}
+
+type SkillProgressType {
+  skillId: ID!
+  code: String!
+  name: String!
+  topic: String!
+  level: Int!
+  points: [SkillSeriesPointType!]!
+  first: Float
+  latest: Float
+  delta: Float!
+  status: String!
+}
+
+type SkillRefType {
+  id: ID!
+  code: String!
+  name: String!
+}
+
+type SkillSeriesPointType {
+  examId: ID!
+  at: DateTime!
+  score: Float!
+}
+
+type SkillTrendType {
+  skillId: ID!
+  code: String!
+  name: String!
+  points: [SkillMasteryPointType!]!
+  first: Float
+  latest: Float
+  delta: Float!
+}
+
+type SkillType {
+  id: ID!
+  topic: TopicRefType!
+  code: String!
+  name: String!
+  description: String!
+  order: Int!
+  reviewStatus: String!
+  prerequisites: [SkillRefType!]!
+}
+
+type StudentMoveType {
+  studentId: ID!
+  studentName: String!
+  admissionNo: String!
+  fromPercent: Float!
+  toPercent: Float!
+  delta: Float!
+  reason: String!
+}
+
+type StudentProgressType {
+  studentId: ID!
+  studentName: String!
+  admissionNo: String!
+  exams: [ProgressExamPointType!]!
+  skills: [SkillProgressType!]!
+  overallGrowth: Float!
+  rows: [SkillMasteryType!]!
+}
+
+type StudentReportType {
+  id: ID!
+  student: StudentType!
+  summary: String!
+  strengths: JSON!
+  gaps: JSON!
+  guide: JSON!
+  practiceSet: JSON!
+  teacherNotes: String!
+  viewedAt: DateTime
+  language: String!
+  status: String!
+  createdAt: DateTime!
+  examId: ID!
+  score: Float
+  classAverage: Float
+  percentileBand: String
+}
+
+type StudentType {
+  id: ID!
+  fullName: String!
+  admissionNo: String!
+  gender: String!
+  dateOfBirth: Date
+  isActive: Boolean!
+}
+
+type StudentTypePage {
+  total: Int!
+  items: [StudentType!]!
+}
+
+type SubjectType {
+  id: ID!
+  name: String!
+  code: String!
+  isActive: Boolean!
+}
+
+type SubjectTypePage {
+  total: Int!
+  items: [SubjectType!]!
+}
+
+type TeacherAssignmentType {
+  id: ID!
+  teacher: UserType!
+  schoolClass: SchoolClassType!
+  subject: SubjectType!
+  term: AcademicTermType!
+  isActive: Boolean!
+}
+
+type TeacherAssignmentTypePage {
+  total: Int!
+  items: [TeacherAssignmentType!]!
+}
+
+type TeachingMaterialType {
+  id: ID!
+  kind: String!
+  content: JSON!
+  language: String!
+  createdAt: DateTime!
+}
+
+type TopicRefType {
+  id: ID!
+  name: String!
+  level: Int!
+}
+
+type TopicType {
+  id: ID!
+  subject: CurriculumSubjectType!
+  level: Int!
+  name: String!
+  order: Int!
+  reviewStatus: String!
+  skills: [SkillType!]!
+}
+
+"""Represents a file upload."""
+scalar Upload
+
+type UserType {
+  id: ID!
+  email: String!
+  firstName: String!
+  lastName: String!
+  role: String!
+  isActive: Boolean!
+  school: SchoolType
+  mustChangePassword: Boolean!
+}
+
+type UserTypePage {
+  total: Int!
+  items: [UserType!]!
+}
